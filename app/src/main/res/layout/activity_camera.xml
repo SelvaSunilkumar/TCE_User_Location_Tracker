@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".CameraActivity">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        app:cardElevation="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:id="@+id/goBack"
+                android:clickable="true"
+                android:background="?selectableItemBackground"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:padding="12dp">
+                
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_action_goback"/>
+                
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="end">
+
+                <LinearLayout
+                    android:id="@+id/uploadImageBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="?selectableItemBackground"
+                    android:clickable="true"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Upload Image"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:paddingHorizontal="10dp"/>
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_action_upload"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="270dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                app:cardCornerRadius="75dp">
+
+                <ImageView
+                    android:id="@+id/userImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_action_image"/>
+
+            </androidx.cardview.widget.CardView>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                app:cardCornerRadius="38dp"
+                android:layout_marginTop="125dp"
+                android:layout_marginLeft="200dp">
+
+                <LinearLayout
+                    android:id="@+id/openCameraBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:background="?selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="20dp"
+                        android:src="@drawable/ic_action_opencamera"/>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <com.agrawalsuneet.dotsloader.loaders.LazyLoader
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:lazyloader_animDur="800"
+                app:lazyloader_dotsDist="10dp"
+                app:lazyloader_dotsRadius="3.5dp"
+                app:lazyloader_firstDelayDur="150"
+                app:lazyloader_firstDotColor="@color/darkred"
+                app:lazyloader_interpolator="@android:anim/decelerate_interpolator"
+                app:lazyloader_secondDelayDur="300"
+                app:lazyloader_secondDotColor="@color/darkGreen"
+                app:lazyloader_thirdDotColor="@color/yellow" />
+            <TextView
+                android:id="@+id/uploading"
+                android:visibility="invisible"
+                android:paddingHorizontal="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Uploading..."
+                android:fontFamily="sans-serif"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/failed"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="@color/red"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload Failed. Stored in local datbase"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/success"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="@color/green"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload Successfull"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/noImage"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="@color/colorAccent"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Please snap image to Upload"
+                android:textColor="#fff"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

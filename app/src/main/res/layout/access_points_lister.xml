@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginHorizontal="7dp"
+    android:layout_marginVertical="7dp"
+    app:cardElevation="10dp"
+    app:cardCornerRadius="10dp">
+
+    <LinearLayout
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="0.5">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Latitude"
+                    android:gravity="center"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/latitude"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Latitude"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="0.5">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Longitude"
+                    android:gravity="center"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/longitude"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Longitude"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="0.5">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Location Name"
+                    android:gravity="center"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/locationName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Location Name"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="0.5">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Accuracy"
+                    android:gravity="center"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/accuracy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="accuracy"
+                    android:gravity="center"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>
