@@ -38,6 +38,9 @@ public class BackgroundService extends Service {
     //private static final String UPLOAD_LOCATION_INTO_SERVER_DATABASE = "https://tltms.tce.edu/tracker/locationtracker/index.php/welcome/updateLocation";
     private static final String UPLOAD_LOCATION_INTO_SERVER_DATABASE = "http://192.168.43.225/locationtracker/index.php/welcome/updateLocation";
 
+    //private static final String UPLOAD_IMAGE_INTO_SERVER_URL = "https://tltms.tce.edu/tracker/locationtracker/index.php/welcome/uploadImage";
+    private static final String UPLOAD_IMAGE_INTO_SERVER_URL = "http://192.168.43.225/locationtracker/index.php/welcome/uploadImage";
+
     protected static final int NOTIFICATION_ID = 1337;
 
     protected static int DELAY_RUNNABLE_TIMER = 30000;
@@ -205,7 +208,7 @@ public class BackgroundService extends Service {
 
                     //upload the un-uploaded images
                     if (databaseHandler.getImageCount() > 0) {
-
+                        uploadFailedImage(databaseHandler.getImage());
                     }
                 }
                 //------------------- Executes when the time is >4pm and <9am ----------------------
@@ -399,6 +402,61 @@ public class BackgroundService extends Service {
     }
     //----------------------------------------------------------------------------------------------
 
+
+    /*----------------------------------------------------------------------------------------------
+                        Upload local database Image into Server database
+    ----------------------------------------------------------------------------------------------*/
+    private void uploadFailedImage (Cursor imagesData) {
+        String upTime;
+        double latitude;
+        double longitude;
+        String position;
+        String image;
+
+        while (imagesData.moveToNext()) {
+            upTime = imagesData.getString(0);
+            latitude = imagesData.getDouble(1);
+            longitude = imagesData.getDouble(2);
+            position = imagesData.getString(3);
+            image = imagesData.getString(4);
+            uploadFailedImageIntoServer(upTime, latitude, longitude, position, image);
+        }
+
+    }
+
+    private void uploadFailedImageIntoServer (final String upTime, final double latitude, final double longitude, final String position, final String image) {
+        requestQueue = Volley.newRequestQueue(this);
+        stringRequest = new StringRequest(Request.Method.POST, UPLOAD_IMAGE_INTO_SERVER_URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                if (response.equals("ok")) {
+                    //function to delete the image from local database
+                    databaseHandler.deleteImageOnUpdate(upTime);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        })
+        {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("systemId", getSystemUniqueId());
+                params.put("exactTime", upTime);
+                params.put("latitude", Double.toString(latitude));
+                params.put("longitude", Double.toString(longitude));
+                params.put("status", position);
+                params.put("image", image);
+                return params;
+            }
+        };
+    }
+
+    //----------------------------------------------------------------------------------------------
+
     /*----------------------------------------------------------------------------------------------
                         Check if the Mobile data is Switched ON or OFF
     ----------------------------------------------------------------------------------------------*/
@@ -426,6 +484,7 @@ public class BackgroundService extends Service {
 
     }
     //----------------------------------------------------------------------------------------------
+
 
     /*----------------------------------------------------------------------------------------------
                             Check if the WIFI is Switched ON or OFF

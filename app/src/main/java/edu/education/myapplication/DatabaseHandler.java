@@ -160,6 +160,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //----------------------------------------------------------------------------------------------
 
     /*----------------------------------------------------------------------------------------------
+                    Delete location from database on Uploading into Server Database
+    ----------------------------------------------------------------------------------------------*/
+    public void deleteImageOnUpdate (String dateTime) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.delete("user_image","up_date='" + dateTime + "'",null);
+    }
+    //----------------------------------------------------------------------------------------------
+
+    /*----------------------------------------------------------------------------------------------
                         Get stored Access Point locations from Local Database
     ----------------------------------------------------------------------------------------------*/
     public Cursor getAccessPoints() {
