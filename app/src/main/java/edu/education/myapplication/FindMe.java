@@ -1,6 +1,7 @@
 package edu.education.myapplication;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -19,8 +20,14 @@ import java.util.ArrayList;
 public class FindMe {
 
     private DatabaseHandler databaseHandler;
+    private Context context;
+
+    public FindMe(Context context) {
+        this.context = context;
+    }
 
     private static final String ACCESS_POINT_LOCATIONS_DATA_URL = "http://192.168.43.225/locationtracker/index.php/welcome/getAccessPoints";
+    //private static final String ACCESS_POINT_LOCATIONS_DATA_URL = "http://tltms.tce.edu/locationtracker/index.php/welcome/getAccessPoints";
     //Code to Upload location Access Points into Local database
     public void getAccessPointLocations(final Context context) {
 
@@ -60,40 +67,23 @@ public class FindMe {
 
     }
 
-    private static final int MIN_USER_BLOCK_DISTANCE = 50;
-
-    /*----------------------------------------------------------------------------------------------
-                            GEO-LOCATION OF BLOCKS IN CAMPUS
-    ----------------------------------------------------------------------------------------------*/
-    private double[] CSE_BLOCK = new double[] {9.88282, 78.08374};
-    private double[] FOOD_COURT = new double[] {9.88338, 78.08324};
-    private double[] MAIN_BLOCK = new double[] {9.88282, 78.08254};
-    //----------------------------------------------------------------------------------------------
-
-    private int getLocationDistance(double latitude, double longitude) {
-        if (calculateDistance(CSE_BLOCK[0], CSE_BLOCK[1], latitude, longitude) <= MIN_USER_BLOCK_DISTANCE) {
-            return 0;
-        } else if (calculateDistance(FOOD_COURT[0], FOOD_COURT[1], latitude, longitude) <= MIN_USER_BLOCK_DISTANCE) {
-            return 1;
-        } else if (calculateDistance(MAIN_BLOCK[0], MAIN_BLOCK[1], latitude, longitude) <= MIN_USER_BLOCK_DISTANCE) {
-            return 2;
-        } else {
-            return -1;
-        }
-    }
-
     public String getLocationStatus(double latitude, double longitude) {
 
-        switch (getLocationDistance(latitude, longitude)) {
-            case 0:
-                return "CSE Departmant";
-            case 1:
-                return "Food Court";
-            case 2:
-                return "Main Block";
-            default:
-                return "Some Other location";
+        databaseHandler = new DatabaseHandler(context);
+        Cursor cursor = databaseHandler.getAccessPoints();
+
+        while (cursor.moveToNext()) {
+            double accessLatitude = cursor.getDouble(0);
+            double accessLongitude = cursor.getDouble(1);
+            String accessPointName = cursor.getString(2);
+            double accessAccuracy = cursor.getDouble(3);
+
+            if (calculateDistance(accessLatitude, accessLongitude, latitude, longitude) <= accessAccuracy) {
+                return accessPointName;
+            }
         }
+
+        return "Other Location";
 
     }
 

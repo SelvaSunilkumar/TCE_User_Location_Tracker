@@ -30,8 +30,8 @@ public class adminAuth extends AppCompatActivity {
         warning = findViewById(R.id.warning);
         warningMessage = findViewById(R.id.message);
 
-        FindMe findMe = new FindMe();
-        findMe.getAccessPointLocations(this);
+        /*FindMe findMe = new FindMe();
+        findMe.getAccessPointLocations(this);*/
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override

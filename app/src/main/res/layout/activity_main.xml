@@ -15,37 +15,57 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="?actionBarSize"
             android:orientation="horizontal"
-            android:gravity="right|center_vertical">
+            android:weightSum="1">
 
             <LinearLayout
-                android:id="@+id/admin"
-                android:clickable="true"
                 android:layout_width="52dp"
                 android:layout_height="52dp"
-                android:background="?selectableItemBackground"
-                android:padding="12dp">
+                android:gravity="center_vertical|left">
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_action_database"/>
+                    android:src="@drawable/tce_logo"/>
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/openCamera"
-                android:clickable="true"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:background="?selectableItemBackground"
-                android:padding="12dp">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="right|center_vertical">
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_action_camera"/>
+                <LinearLayout
+                    android:id="@+id/admin"
+                    android:clickable="true"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="?selectableItemBackground"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_action_database"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/openCamera"
+                    android:clickable="true"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="?selectableItemBackground"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_action_camera"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 

@@ -35,12 +35,12 @@ import java.util.Map;
 
 public class BackgroundService extends Service {
 
-    private static final String UPLOAD_LOCATION_INTO_SERVER_DATABASE = "https://tltms.tce.edu/tracker/locationtracker/index.php/welcome/updateLocation";
-    //private static final String UPLOAD_LOCATION_INTO_SERVER_DATABASE = "http://192.168.43.89/locationtracker/index.php/welcome/updateLocation";
+    //private static final String UPLOAD_LOCATION_INTO_SERVER_DATABASE = "https://tltms.tce.edu/tracker/locationtracker/index.php/welcome/updateLocation";
+    private static final String UPLOAD_LOCATION_INTO_SERVER_DATABASE = "http://192.168.43.225/locationtracker/index.php/welcome/updateLocation";
 
     protected static final int NOTIFICATION_ID = 1337;
 
-    protected static int DELAY_RUNNABLE_TIMER = 20000;
+    protected static int DELAY_RUNNABLE_TIMER = 30000;
 
     private static String SYSTEM_UNIQUE_IDENTIFICATION_ID;
 
@@ -49,6 +49,10 @@ public class BackgroundService extends Service {
     private static Service currentService;
 
     private static boolean isUploaded = false;
+
+    private FindMe findMe;
+
+    private String lastUploadedTime = "";
 
 
     /*----------------------------------------------------------------------------------------------
@@ -159,6 +163,10 @@ public class BackgroundService extends Service {
 
         SYSTEM_UNIQUE_IDENTIFICATION_ID = getSystemUniqueId();
 
+        if (handler != null && runnable != null) {
+              handler.removeCallbacks(runnable);
+        }
+
         initializeLocationService();
 
         handler.postDelayed(runnable, DELAY_RUNNABLE_TIMER);
@@ -172,6 +180,7 @@ public class BackgroundService extends Service {
 
         gpsTracker = new GPSTracker(getApplicationContext());
         databaseHandler = new DatabaseHandler(this);
+        findMe = new FindMe(this);
         date = new Date();
 
         handler = new Handler();
@@ -184,7 +193,7 @@ public class BackgroundService extends Service {
 
                 int currentTimeInHours = getCurrentTimeInHours();
 
-                if (currentTimeInHours >= 8 && currentTimeInHours < 9) {
+                if (currentTimeInHours >= 7 && currentTimeInHours < 8) {
                     //change the runner timer
                     //upload the un-uploaded content
                     DELAY_RUNNABLE_TIMER = 60 * 30 * 1000;  //-- Runs every 30 Minutes
@@ -202,7 +211,7 @@ public class BackgroundService extends Service {
                 //------------------- Executes when the time is >4pm and <9am ----------------------
                 else {
 
-                    DELAY_RUNNABLE_TIMER = 20 * 1000;       //-- Runs Every 20 Seconds
+                    DELAY_RUNNABLE_TIMER = 30 * 1000;       //-- Runs Every 20 Seconds
 
                     if (gpsTracker.canGetLocation) {
 
@@ -215,30 +224,7 @@ public class BackgroundService extends Service {
                             String status = "";
                             String dateTimeStamp = "";
 
-                        /*if (!isMobileDataEnabled() && !isWiFiEnabled()) {
-                            Toast.makeText(getApplicationContext(),"Mobile Data Swirched off",Toast.LENGTH_LONG).show();
-                        } else*/
-
-                            //---------------------------- CSE BLOCK -----------------------------------
-                            if (calculateDistance(CSE_BLOCK[0], CSE_BLOCK[1],latitude, longitude) <= MIN_USER_BLOCK_LOCATIOn_DISTANCE) {
-                                Toast.makeText(getApplicationContext(),"CLoser to CSE Dept, Distance : "  + String.valueOf(calculateDistance(CSE_BLOCK[0], CSE_BLOCK[1],latitude, longitude)),Toast.LENGTH_LONG).show();
-                                status = "CSE Department";
-                            }
-                            //---------------------------- FOOD COURT ----------------------------------
-                            else if (calculateDistance(FOOD_COURT[0], FOOD_COURT[1], latitude, longitude) <= MIN_USER_BLOCK_LOCATIOn_DISTANCE) {
-                                Toast.makeText(getApplicationContext(),"Closer to Food Court, Distance : " + String.valueOf(calculateDistance(FOOD_COURT[0], FOOD_COURT[1],latitude, longitude)),Toast.LENGTH_LONG).show();
-                                status = "Food Court";
-                            }
-                            //---------------------------- MAIN BLOCK ----------------------------------
-                            else if (calculateDistance(MAIN_BLOCK[0], MAIN_BLOCK[1], latitude, longitude) <= MIN_USER_BLOCK_LOCATIOn_DISTANCE) {
-                                Toast.makeText(getApplicationContext(),"CLoser to Main Block, Distance : " + String.valueOf(calculateDistance(MAIN_BLOCK[0], MAIN_BLOCK[1],latitude, longitude)),Toast.LENGTH_LONG).show();
-                                status = "Main Block";
-                            }
-                            //---------------------------- OTHER LOCATION ------------------------------
-                            else {
-                                Toast.makeText(getApplicationContext(),"Other Location, Distance : " + String.valueOf(calculateDistance(CSE_BLOCK[0], CSE_BLOCK[1],latitude, longitude)) + " lat : " + String.valueOf(gpsTracker.getLatitude() + " lon : " + String.valueOf(gpsTracker.getLongitude())) + " time : " + getCurrentTime(),Toast.LENGTH_LONG).show();
-                                status = "Other Location";
-                            }
+                            status = findMe.getLocationStatus(latitude, longitude);
 
                             dateTimeStamp = getCurrentTime();
 
@@ -266,30 +252,7 @@ public class BackgroundService extends Service {
                 handler.postDelayed(this, DELAY_RUNNABLE_TIMER);
             }
         };
-    }
-    //----------------------------------------------------------------------------------------------
-
-    /*----------------------------------------------------------------------------------------------
-                    get location attributes and calculate the distance
-    ----------------------------------------------------------------------------------------------*/
-    private int calculateDistance(double blockLatitude, double blockLongitude, double userLatitude, double userLongitude) {
-        double theta = blockLongitude - userLongitude;
-        double distance = Math.sin(deg2rad(blockLatitude)) * Math.sin(deg2rad(userLatitude)) + Math.cos(deg2rad(blockLatitude)) * Math.cos(deg2rad(userLatitude)) * Math.cos(deg2rad(theta));
-        distance = Math.acos(distance);
-        distance = rad2deg(distance);
-        distance = distance * 60 * 1.1515;
-        distance = distance * 1.609344;
-        distance = distance * 1000;
-        return (int) Math.round(distance);
-    }
-
-    //------------------------------ Mathematical Calculation Methods ------------------------------
-    private double deg2rad(double deg) {
-        return (deg * Math.PI / 180.0);
-    }
-
-    private double rad2deg(double rad) {
-        return (rad * 180.0 / Math.PI);
+        System.gc();
     }
     //----------------------------------------------------------------------------------------------
 
@@ -321,37 +284,45 @@ public class BackgroundService extends Service {
         ------------------------------------------------------------------------------------------*/
         //Toast.makeText(getApplicationContext(),"response",Toast.LENGTH_SHORT).show();
         requestQueue = Volley.newRequestQueue(this);
-        stringRequest = new StringRequest(Request.Method.POST, UPLOAD_LOCATION_INTO_SERVER_DATABASE, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Toast.makeText(getApplicationContext(),response,Toast.LENGTH_SHORT).show();
-                System.out.println(response);
-                if (response.equals("ok")) {
-                    Toast.makeText(getApplicationContext(),"Successfull", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getApplicationContext(),"Failed", Toast.LENGTH_LONG).show();
+
+        if (!lastUploadedTime.equals(dataTimeStamp)) {
+
+            stringRequest = new StringRequest(Request.Method.POST, UPLOAD_LOCATION_INTO_SERVER_DATABASE, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Toast.makeText(getApplicationContext(),response,Toast.LENGTH_SHORT).show();
+                    System.out.println(response);
+                    if (response.equals("ok")) {
+                        Toast.makeText(getApplicationContext(),"Successfull", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(),"Failed", Toast.LENGTH_LONG).show();
+                        updateLocalDatabase(latitude, longitude, status, dataTimeStamp);
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
                     updateLocalDatabase(latitude, longitude, status, dataTimeStamp);
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                updateLocalDatabase(latitude, longitude, status, dataTimeStamp);
-            }
-        })
-        {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> params = new HashMap<>();
-                params.put("id",getSystemUniqueId());
-                params.put("latitude", Double.toString(latitude));
-                params.put("longitude", Double.toString(longitude));
-                params.put("status",status);
-                params.put("dataTimeStamp",dataTimeStamp);
-                return params;
-            }
-        };
-        requestQueue.add(stringRequest);
+            })
+            {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String,String> params = new HashMap<>();
+                    params.put("id",getSystemUniqueId());
+                    params.put("latitude", Double.toString(latitude));
+                    params.put("longitude", Double.toString(longitude));
+                    params.put("status",status);
+                    params.put("dataTimeStamp",dataTimeStamp);
+                    return params;
+                }
+            };
+            requestQueue.add(stringRequest);
+
+            lastUploadedTime = dataTimeStamp;
+
+            System.gc();
+        }
         //stringRequest.cancel();
     }
     //----------------------------------------------------------------------------------------------
